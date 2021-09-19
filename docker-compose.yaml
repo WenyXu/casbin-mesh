@@ -1,29 +1,47 @@
 version: '3'
 services:
   node0:
-    build: .
+    image: ghcr.io/wenyxu/casbin-mesh:v0.0.2
     entrypoint: /root/casbin_mesh
     command: >
-       -node-id node0 -enable-basic -endpoint-no-verify
+      -node-id node0
+      -enable-basic
+      -raft-address 0.0.0.0:4001
+      -raft-advertise-address node0:4001
+      -endpoint-no-verify
     ports:
       - "4001"
     volumes:
       - ./store/casbin/data:/casbin_mesh/data
   node1:
-    build: .
+    image: ghcr.io/wenyxu/casbin-mesh:v0.0.2
     entrypoint: /root/casbin_mesh
     command: >
-      -node-id node1 -enable-basic -join http://node0:4001 -endpoint-no-verify
+      -node-id node1
+      -enable-basic
+      -raft-address 0.0.0.0:4001
+      -raft-advertise-address node1:4001
+      -join http://node0:4001
+      -endpoint-no-verify
     ports:
       - "4001"
     volumes:
       - ./store/casbin/data:/casbin_mesh/data
+    depends_on:
+      - node0
   node2:
-    build: .
+    image: ghcr.io/wenyxu/casbin-mesh:v0.0.2
     entrypoint: /root/casbin_mesh
     command: >
-      -node-id node2 -enable-basic -join http://node0:4001 -endpoint-no-verify
+      -node-id node2
+      -enable-basic
+      -raft-address 0.0.0.0:4001
+      -raft-advertise-address node2:4001
+      -join http://node0:4001
+      -endpoint-no-verify
     ports:
       - "4001"
     volumes:
-      - ./store/etcd3/data:/casbin_mesh/data
+      - ./store/casbin/data:/casbin_mesh/data
+    depends_on:
+      - node0
