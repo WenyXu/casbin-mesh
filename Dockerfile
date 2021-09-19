@@ -16,8 +16,8 @@ RUN mkdir -p /casbin_mesh/file
 
 VOLUME /casbin_mesh/data
 
-COPY ./docker-entrypoint.sh ./
-ENTRYPOINT ["/root/docker-entrypoint.sh"]
+COPY ./docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 4001
 
