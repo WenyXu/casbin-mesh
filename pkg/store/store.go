@@ -106,6 +106,7 @@ type Store struct {
 	ln            Listener
 	raftTn        *raft.NetworkTransport
 	raftID        string // Node ID.
+	advAddr       string
 
 	raftLog    raft.LogStore    // Persistent log store.
 	raftStable raft.StableStore // Persistent k-v store.
@@ -180,6 +181,7 @@ func New(ln Listener, c *StoreConfig) *Store {
 		ApplyTimeout:  applyTimeout,
 		authType:      c.AuthType,
 		authCredStore: c.CredentialsStore,
+		advAddr:       c.AdvAddr,
 	}
 	logger.Printf("cred store %v", c.CredentialsStore)
 	logger.Println("store is ready")
@@ -264,12 +266,12 @@ func (s *Store) Open(enableBootstrap bool) error {
 	}
 
 	if enableBootstrap {
-		s.logger.Printf("executing new cluster bootstrap")
+		s.logger.Printf("executing new cluster bootstrap, addr:%s", s.advAddr)
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
 				{
 					ID:      config.LocalID,
-					Address: s.raftTn.LocalAddr(),
+					Address: raft.ServerAddress(s.advAddr),
 				},
 			},
 		}

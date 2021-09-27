@@ -186,11 +186,17 @@ func main() {
 		}
 	}
 
+	advAddr := raftAddr
+	if raftAdv != "" {
+		advAddr = raftAdv
+	}
+
 	str := store.New(raftLn, &store.StoreConfig{
 		Dir:              dataPath,
 		ID:               idOrRaftAddr(),
 		AuthType:         authType,
 		CredentialsStore: credentialsStore,
+		AdvAddr:          advAddr,
 	})
 
 	// Set optional parameters on store.
