@@ -5,7 +5,7 @@ services:
     command: >
       -node-id node0
       -enable-basic
-      -raft-address 0.0.0.0:4002
+      -raft-address node0:4002
       -raft-advertise-address node0:4002
       -endpoint-no-verify
     ports:
@@ -17,7 +17,7 @@ services:
     command: >
       -node-id node1
       -enable-basic
-      -raft-address 0.0.0.0:4002
+      -raft-address node1:4002
       -raft-advertise-address node1:4002
       -join http://node0:4002
       -endpoint-no-verify
@@ -32,7 +32,7 @@ services:
     command: >
       -node-id node2
       -enable-basic
-      -raft-address 0.0.0.0:4002
+      -raft-address node2:4002
       -raft-advertise-address node2:4002
       -join http://node0:4002
       -endpoint-no-verify
