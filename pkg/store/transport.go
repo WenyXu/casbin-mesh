@@ -15,13 +15,23 @@ type Listener interface {
 
 // Transport is the network service provided to Raft, and wraps a Listener.
 type Transport struct {
-	ln Listener
+	ln   Listener
+	addr string
+}
+
+func (t *Transport) Network() string {
+	return t.ln.Addr().Network()
+}
+
+func (t *Transport) String() string {
+	return t.addr
 }
 
 // NewTransport returns an initialized Transport.
-func NewTransport(ln Listener) *Transport {
+func NewTransport(ln Listener, addr string) *Transport {
 	return &Transport{
-		ln: ln,
+		ln:   ln,
+		addr: addr,
 	}
 }
 
@@ -42,5 +52,5 @@ func (t *Transport) Close() error {
 
 // Addr returns the binding address of the transport.
 func (t *Transport) Addr() net.Addr {
-	return t.ln.Addr()
+	return t
 }

@@ -134,6 +134,11 @@ func main() {
 	// Start requested profiling.
 	startProfile(cpuProfile, memProfile)
 
+	advAddr := raftAddr
+	if raftAdv != "" {
+		advAddr = raftAdv
+	}
+
 	// Create internode network layer.
 	var ln net.Listener
 	if encrypt {
@@ -191,6 +196,7 @@ func main() {
 		ID:               idOrRaftAddr(),
 		AuthType:         authType,
 		CredentialsStore: credentialsStore,
+		AdvAddr:          advAddr,
 	})
 
 	// Set optional parameters on store.

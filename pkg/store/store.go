@@ -106,6 +106,7 @@ type Store struct {
 	ln            Listener
 	raftTn        *raft.NetworkTransport
 	raftID        string // Node ID.
+	advAddr       string
 
 	raftLog    raft.LogStore    // Persistent log store.
 	raftStable raft.StableStore // Persistent k-v store.
@@ -180,6 +181,7 @@ func New(ln Listener, c *StoreConfig) *Store {
 		ApplyTimeout:  applyTimeout,
 		authType:      c.AuthType,
 		authCredStore: c.CredentialsStore,
+		advAddr:       c.AdvAddr,
 	}
 	logger.Printf("cred store %v", c.CredentialsStore)
 	logger.Println("store is ready")
@@ -215,7 +217,7 @@ func (s *Store) Open(enableBootstrap bool) error {
 	}
 
 	// Create Raft-compatible network layer.
-	s.raftTn = raft.NewNetworkTransport(NewTransport(s.ln), connectionPoolCount, connectionTimeout, nil)
+	s.raftTn = raft.NewNetworkTransport(NewTransport(s.ln, s.advAddr), connectionPoolCount, connectionTimeout, nil)
 
 	// Don't allow control over trailing logs directly, just implement a policy.
 	s.numTrailingLogs = uint64(float64(s.SnapshotThreshold) * trailingScale)
@@ -264,7 +266,7 @@ func (s *Store) Open(enableBootstrap bool) error {
 	}
 
 	if enableBootstrap {
-		s.logger.Printf("executing new cluster bootstrap")
+		s.logger.Printf("executing new cluster bootstrap, addr:%s", s.raftTn.LocalAddr())
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
 				{
